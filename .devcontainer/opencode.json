@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+
+  "instructions": ["AGENTS.md"],
+
+  "permission": {
+    "read": "allow",
+    "list": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "edit": "allow",
+    "bash": "allow"
+  },
+
+  "autoupdate": false,
+  "share": "disabled",
+  "logLevel": "INFO",
+
+  "tool_output": { "max_lines": 200 },
+  "compaction": { "auto": true }
+}

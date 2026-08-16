@@ -1,0 +1,34 @@
+{
+  "name": "RNA-seq x Agent Workshop",
+
+  // 講師課前 build 並推到 GHCR（見 .devcontainer/Dockerfile 的說明）。
+  // 用預建 image，Codespace 啟動只要幾十秒，不在課堂上做 conda solve。
+  "image": "ghcr.io/tuxinhe152xd-cyber/rnaseq-agent:1.0",
+
+  // 免費額度是 core-hour 計算的：2 核跑 1 小時 = 2 core-hours。
+  // 指定 2 核，90 分鐘的課只花 3 core-hours（免費額度 120）。
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+
+  // 建立時把 FASTQ 與 chr20 index 從 Release 抓下來（約 244 MB）
+  "postCreateCommand": "bash scripts/fetch_data.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.live-server"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  // 學員可以在 GitHub 的 Codespaces secrets 裡設 NVIDIA_API_KEY，
+  // 不設的話課堂上用 export 也可以。
+  "remoteUser": "root",
+  "waitFor": "postCreateCommand"
+}

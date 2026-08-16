@@ -1,0 +1,18 @@
+# 由 scripts/fetch_data.sh 下載，不進版控
+raw/
+ref/
+
+# 分析產出
+qc/
+trim/
+quant/
+PyDESeq2/counts.tsv
+PyDESeq2/gene_names.tsv
+PyDESeq2/output_files/
+
+# 課前產生的 Release 素材
+release-assets/
+
+__pycache__/
+*.pyc
+.DS_Store
