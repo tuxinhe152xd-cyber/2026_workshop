@@ -8,9 +8,10 @@ set -euo pipefail
 # 講師：把 tuxinhe152xd-cyber/2026_workshop 換成實際的 repo，TAG 換成 Release 的 tag
 REPO="${WORKSHOP_REPO:-tuxinhe152xd-cyber/2026_workshop}"
 TAG="${WORKSHOP_DATA_TAG:-data-v1}"
-BASE="https://github.com/${REPO}/releases/download/${TAG}"
 
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$HERE/_gh_download.sh"
+cd "$HERE/.."
 
 need() {   # need <目標路徑> <release 檔名>
   local dest="$1" asset="$2"
@@ -19,14 +20,8 @@ need() {   # need <目標路徑> <release 檔名>
     return 0
   fi
   echo "  下載 $asset ..."
-  curl -fSL --retry 3 --retry-delay 2 -o "$dest.part" "$BASE/$asset" || {
-    echo
-    echo "下載失敗：$BASE/$asset" >&2
-    echo "確認 Release '$TAG' 存在且該檔案已上傳，或用環境變數覆蓋：" >&2
-    echo "  WORKSHOP_REPO=你的帳號/你的repo WORKSHOP_DATA_TAG=tag bash scripts/fetch_data.sh" >&2
-    rm -f "$dest.part"
-    exit 1
-  }
+  local url; url="$(gh_asset_url "$REPO" "$TAG" "$asset")"
+  gh_fetch "$url" "$dest.part" || { rm -f "$dest.part"; gh_diag "$REPO" "$TAG"; exit 1; }
   mv "$dest.part" "$dest"
 }
 

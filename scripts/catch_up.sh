@@ -11,9 +11,10 @@ set -euo pipefail
 
 REPO="${WORKSHOP_REPO:-tuxinhe152xd-cyber/2026_workshop}"
 TAG="${WORKSHOP_DATA_TAG:-data-v1}"
-URL="https://github.com/${REPO}/releases/download/${TAG}/prebaked.tar"
 
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$HERE/_gh_download.sh"
+cd "$HERE/.."
 
 STAGE="${1:-}"
 case "$STAGE" in
@@ -29,11 +30,8 @@ esac
 CACHE=.prebaked.tar
 if [[ ! -s "$CACHE" ]]; then
   echo "下載預跑結果 ..."
-  curl -fSL --retry 3 -o "$CACHE.part" "$URL" || {
-    echo "下載失敗：$URL" >&2
-    echo "確認 Release 裡有 prebaked.tar" >&2
-    rm -f "$CACHE.part"; exit 1
-  }
+  URL="$(gh_asset_url "$REPO" "$TAG" prebaked.tar)"
+  gh_fetch "$URL" "$CACHE.part" || { rm -f "$CACHE.part"; gh_diag "$REPO" "$TAG"; exit 1; }
   mv "$CACHE.part" "$CACHE"
 fi
 
