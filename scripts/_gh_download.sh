@@ -52,7 +52,9 @@ for a in d.get('assets',[]):
 gh_fetch() {
   local url="$1" out="$2" tok
   tok="$(gh_token)"
-  local args=(-fSL --retry 3 --retry-delay 2 --max-time 900 -o "$out")
+  # --no-progress-meter：Codespace 的 setup log 是學員會看到的畫面，
+  # curl 的進度條會把它洗掉。錯誤訊息仍然會出來（-S）。
+  local args=(-fSL -S --no-progress-meter --retry 3 --retry-delay 2 --max-time 900 -o "$out")
 
   if [[ -n "$tok" ]]; then
     args+=(-H "Authorization: Bearer ${tok}")
