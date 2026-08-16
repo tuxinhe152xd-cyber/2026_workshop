@@ -150,15 +150,25 @@ MINLEN 訂太嚴：讀數損失，低表現基因被剪光。0.4 倍是常用的
 
 ## 驗收
 
-交給使用者一張表，**六個欄位都要有值**，其中兩格要寫出依據：
+交給使用者一張表。**adapter 檔名只寫一次，就寫在 ILLUMINACLIP 裡** ——
+不要另外開一列重複寫檔名，兩處很容易寫成不一致的值。
 
 ```
-adapter        : <檔名>                   依據：FastQC 報的 adapter 名稱
-ILLUMINACLIP   : <檔>:2:30:10:2:TRUE      依據：雙端 + 有 adapter 訊號 → keepBothReads=TRUE
+ILLUMINACLIP   : <adapter 檔名>:2:30:10:2:TRUE
+                 依據：FastQC 報的 adapter family → 決定檔名
+                       雙端 + 有 adapter 訊號     → keepBothReads=TRUE
 SLIDINGWINDOW  : 4:20                     依據：<品質曲線的觀察>
 LEADING        : 3
 TRAILING       : 3
 MINLEN         : <值>                     算式：<實測讀長> × 0.4 = <值>
+```
+
+**檔名必須是 `ls` 真的看得到的那個。** 常見的錯誤是把
+`TruSeq3-PE.fa` 和 `TruSeq3-PE-2.fa` 混成 `TruSeq3-PE-PE.fa` 這種不存在的名字。
+不確定就先跑：
+
+```bash
+ls /opt/conda/envs/rnaseq-demo/share/trimmomatic/adapters/
 ```
 
 並提醒使用者：**跑完之後要看 log 的 `Forward Only Surviving`。**
