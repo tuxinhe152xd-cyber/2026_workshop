@@ -30,12 +30,41 @@ fastqc -o qc/raw -f fastq -t 2 raw/*.fastq.gz
 multiqc -o qc/raw --force qc/raw
 ```
 
+**`--force` 不能省。** 少了它，MultiQC 遇到既有報告會改名成
+`multiqc_report_1.html` / `multiqc_data_1/`，後面就會讀到舊的或錯的檔案。
+
 - `-t 2` —— Codespaces 免費機型是 2 核
 - `--force` —— 允許覆蓋前一次的報告
 
 產出：
-- `qc/raw/multiqc_report.html` —— 給人看的報告
-- `qc/raw/multiqc_data/multiqc_general_stats.txt` —— 給程式讀的數字，**下一步會用到**
+
+| 檔案 | 內容 | 什麼時候讀 |
+|---|---|---|
+| `qc/raw/multiqc_report.html` | 給**人**看的報告 | **不要讀進 context** —— 那是 2 MB 以上的 HTML |
+| `qc/raw/multiqc_data/multiqc_general_stats.txt` | 讀長、reads 數、%GC、duplication | 下一步算 MINLEN 會用到 |
+| **`qc/raw/multiqc_data/multiqc_fastqc.txt`** | **每個模組的 PASS / WARN / FAIL** | **解讀模組狀態就讀這個** |
+
+### 要取得模組狀態，用這一行
+
+**不要去解壓 `*_fastqc.zip`** —— 那要拆八個壓縮檔，很容易數錯。
+
+```bash
+python3 -c "
+import csv, collections
+rows = list(csv.DictReader(open('qc/raw/multiqc_data/multiqc_fastqc.txt'), delimiter='\t'))
+for m in ['per_base_sequence_content','sequence_duplication_levels','adapter_content',
+          'per_sequence_gc_content','overrepresented_sequences','per_base_sequence_quality']:
+    print('%-30s %s' % (m, dict(collections.Counter(r[m] for r in rows))))
+"
+```
+
+輸出長這樣，**八個檔案的狀態一次看完**：
+
+```
+per_base_sequence_content      {'fail': 8}
+sequence_duplication_levels    {'fail': 8}
+adapter_content                {'fail': 8}
+```
 
 ## 這個領域的陷阱
 
