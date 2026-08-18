@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Step 3 前置檢查：修剪後的 paired 檔案是否齊全，並印出各樣本存活率。"""
 import gzip
-import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from _find_paired import find_paired
 
 TRIM = Path("trim")
 errors = []
@@ -13,19 +15,21 @@ if not TRIM.is_dir():
     print("  - 找不到 trim/ —— Step 2b（rnaseq-trim-run）還沒跑")
     sys.exit(1)
 
-paired = sorted(TRIM.glob("*_P_R?.fastq.gz"))
-samples = sorted({re.sub(r"_P_R[12]\.fastq\.gz$", "", f.name) for f in paired})
+pairs = find_paired(TRIM)
+samples = sorted(pairs)
+paired = [f for v in pairs.values() for f in v.values()]
 
 for s in samples:
     for r in ("1", "2"):
-        f = TRIM / f"{s}_P_R{r}.fastq.gz"
-        if not f.is_file():
-            errors.append(f"缺少 {f}")
-        elif f.stat().st_size == 0:
+        f = pairs[s][r]
+        if f.stat().st_size == 0:
             errors.append(f"{f} 是空檔案")
 
 if not paired:
-    errors.append("trim/ 底下沒有 *_P_R?.fastq.gz")
+    errors.append(
+        "trim/ 底下找不到成對的 paired FASTQ —— Step 2b 還沒跑完，"
+        "或檔名裡沒有 paired 標記（_P_ / .paired）"
+    )
 
 # 空的 gz 也可能有幾十 bytes，實際讀一行確認
 for f in paired:

@@ -25,14 +25,26 @@ python3 .agents/skills/rnaseq-quant-kallisto/validate.py
 
 四個樣本各跑一次：
 
+**先確認上一步實際產出的檔名** —— 不要假設，`validate.py` 會把配對列出來：
+
+```bash
+python3 .agents/skills/rnaseq-quant-kallisto/validate.py
+```
+
+它會印出每個樣本對應的兩個檔案。然後每個樣本跑一次：
+
 ```bash
 mkdir -p quant/<樣本>
 kallisto quant -t 2 \
   -i ref/gencode.v49.chr20.idx \
   -o quant/<樣本> \
-  trim/<樣本>_P_R1.fastq.gz trim/<樣本>_P_R2.fastq.gz \
+  <該樣本的 R1 paired 檔> <該樣本的 R2 paired 檔> \
   2>&1 | tee quant/<樣本>/kallisto.log
 ```
+
+> **`quant/<樣本>` 的資料夾名要跟 `PyDESeq2/metadata.csv` 的樣本名一致**
+> （`11N_chr20`、`11T_chr20`、`13N_chr20`、`13T_chr20`），
+> 否則 Step 5 會說「樣本對不起來」。
 
 每個樣本約 3–5 秒。四個一起也不到 20 秒。
 
@@ -91,7 +103,7 @@ cat quant/<樣本>/run_info.json
 
 ## 這個領域的陷阱
 
-- **只能餵 `_P_` 檔案。** 少給一個檔案時 kallisto 會轉成 single-end 模式，
+- **只能餵 paired 檔案，不要餵 unpaired。** 少給一個檔案時 kallisto 會轉成 single-end 模式，
   結果完全不同，而且不會有明顯的錯誤。
 - **`est_counts` 和 `tpm` 不能混用。** 下一步的 DESeq2 需要的是 **`est_counts`**
   （未正規化的計數）。TPM 已經做過長度與深度正規化，餵進 DESeq2 會讓統計模型失效。

@@ -26,9 +26,28 @@ python3 .agents/skills/rnaseq-qc-trimmed/validate.py
 
 ```bash
 mkdir -p qc/trim
-fastqc -o qc/trim -f fastq -t 2 trim/*_P_R?.fastq.gz
+fastqc -o qc/trim -f fastq -t 2 <上一步產出的 paired 檔案>
 multiqc -o qc/trim --force qc/trim
 ```
+
+**`--force` 不能省** —— 少了它 MultiQC 會改名成 `multiqc_report_1.html`。
+
+### 取得修剪後的模組狀態
+
+**不要去解壓 `*_fastqc.zip`，也不要 grep HTML。** 狀態在 MultiQC 的資料檔裡：
+
+```bash
+python3 -c "
+import csv, collections
+rows = list(csv.DictReader(open('qc/trim/multiqc_data/multiqc_fastqc.txt'), delimiter='\t'))
+for m in ['adapter_content','per_base_sequence_content','sequence_duplication_levels',
+          'sequence_length_distribution','per_base_sequence_quality']:
+    print('%-30s %s' % (m, dict(collections.Counter(r[m] for r in rows))))
+"
+```
+
+**修剪前後各跑一次**（把 `qc/trim` 換成 `qc/raw`），把兩邊列出來比較。
+預期只有 `adapter_content` 從 `fail` 變 `pass`。
 
 ## 這個領域的陷阱
 
