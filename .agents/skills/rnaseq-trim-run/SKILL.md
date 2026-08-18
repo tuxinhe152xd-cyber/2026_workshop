@@ -1,11 +1,13 @@
 ---
 name: rnaseq-trim-run
 description: >
-  Step 2b of the RNA-seq pipeline — run Trimmomatic PE on all samples with the
-  parameters agreed in the previous step. Use when the user asks to run Trimmomatic,
-  to trim the reads, to 修剪, or says the parameters are confirmed. Contains the
-  correct PE output ordering, why trimming step order matters, and which of the four
-  output files the downstream steps actually use.
+  Step 2b — EXECUTE Trimmomatic PE once the parameter values are already known.
+  Use ONLY when the user has already supplied concrete parameter values in their
+  own message (an adapter filename plus ILLUMINACLIP numbers) and wants those run.
+  Contains the PE output ordering and how to read the four numbers in the log.
+  Do NOT use when the user is asking which parameters to choose, what values to
+  use, or to decide/recommend settings — that is a different concern and this
+  skill has nothing to say about it.
 ---
 
 # Step 2b — 執行修剪（Trimmomatic）
@@ -19,13 +21,12 @@ description: >
 ```bash
 python3 .agents/skills/rnaseq-trim-run/validate.py \
   --adapter <adapter FASTA 的完整路徑> \
-  --illuminaclip <ILLUMINACLIP 的數字欄位，例如 2:30:10:2:TRUE> \
+  --illuminaclip <使用者給的 ILLUMINACLIP 數字欄位> \
   --minlen <MINLEN> --slidingwindow <SLIDINGWINDOW> \
   --leading <LEADING> --trailing <TRAILING>
 ```
 
-參數要從 `rnaseq-trim-params` 那一步、**使用者已經確認過**的表格帶過來。
-使用者還沒確認就先問，不要自己填。
+參數值由使用者在訊息裡給定。**這一步不決定參數，只執行。**
 
 ## 指令
 
@@ -37,7 +38,7 @@ trimmomatic PE -threads 2 \
   raw/<樣本>_R1.fastq.gz  raw/<樣本>_R2.fastq.gz \
   trim/<樣本>_P_R1.fastq.gz  trim/<樣本>_U_R1.fastq.gz \
   trim/<樣本>_P_R2.fastq.gz  trim/<樣本>_U_R2.fastq.gz \
-  ILLUMINACLIP:<adapter>:<上一步確認的欄位，例如 2:30:10:2:TRUE> \
+  ILLUMINACLIP:<使用者給的 adapter 與欄位> \
   LEADING:<L> TRAILING:<T> SLIDINGWINDOW:<W> MINLEN:<M> \
   2>&1 | tee trim/<樣本>.trimmomatic.log
 ```
@@ -58,9 +59,6 @@ trimmomatic PE -threads 2 \
   `ILLUMINACLIP` 一定要放在最前面 —— 先剪掉 adapter，再看品質。
   如果 `MINLEN` 放在 `ILLUMINACLIP` 前面，會先用未剪 adapter 的長度去篩，
   等於這道篩子沒作用。
-- **`ILLUMINACLIP` 有六個欄位，第六個是 `keepBothReads`，預設 FALSE。**
-  雙端定序 + 插入片段偏短時，FALSE 會讓大量 read pair 的 R2 被丟掉。
-  詳見 `rnaseq-trim-params`。
 - **log 一定要留，而且要看兩行不是一行。**
 
 ## 驗收

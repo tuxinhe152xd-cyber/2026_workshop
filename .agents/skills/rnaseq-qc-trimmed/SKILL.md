@@ -51,11 +51,11 @@ multiqc -o qc/trim --force qc/trim
 
 | 哪個數字高 | 代表什麼 | 怎麼辦 |
 |---|---|---|
-| `Forward Only Surviving` 高（>20%） | **R2 被 ILLUMINACLIP 的規則丟掉了**，不是品質問題 | 回頭把 `keepBothReads` 設成 TRUE |
+| `Forward Only Surviving` 高（>20%） | **R2 被 ILLUMINACLIP 的規則丟掉了**，不是品質問題 | 回頭檢查 ILLUMINACLIP 的欄位設定 |
 | `Dropped` 高（>10%） | 真的被品質或長度門檻刷掉 | 回頭看 MINLEN 與 SLIDINGWINDOW |
 
 **`Both Surviving` 只有五成、但 `Dropped` 只有 2%** —— 這種組合幾乎一定是
-`keepBothReads` 沒開，不是資料不好。
+ILLUMINACLIP 的欄位設錯，不是資料不好。
 
 ## 驗收
 
