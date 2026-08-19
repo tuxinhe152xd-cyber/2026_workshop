@@ -4,6 +4,9 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/tuxinhe152xd-cyber/2026_workshop?quickstart=1)
 
+> **課堂實作請開這一頁 → [note.md](note.md)**
+> 從頭到尾要打的字都在裡面，照順序複製貼上就好。
+
 ---
 
 ## 開始之前（課前請先做完）
