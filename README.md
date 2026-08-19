@@ -11,7 +11,7 @@
 
 ## 開始之前（課前請先做完）
 
-1. **有 GitHub 帳號，而且已經開啟兩步驟驗證（2FA）** —— 沒開會建不了 Codespace。
+1. **有 GitHub 帳號** —— 沒開會建不了 Codespace。
    到 <https://github.com/settings/security> 確認。
 2. **申請一把 NVIDIA NIM API key** —— <https://build.nvidia.com>，
    右上角 **Get API Key**，複製那串 `nvapi-` 開頭的字串。免費。
