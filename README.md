@@ -12,7 +12,6 @@
 ## 開始之前（課前請先做完）
 
 1. **有 GitHub 帳號** —— 沒開會建不了 Codespace。
-   到 <https://github.com/settings/security> 確認。
 2. **申請一把 NVIDIA NIM API key** —— <https://build.nvidia.com>，
    右上角 **Get API Key**，複製那串 `nvapi-` 開頭的字串。免費。
 
@@ -32,30 +31,10 @@
 第一次約 1–2 分鐘：拉環境 image、下載課程資料（約 244 MB）。
 看到終端機出現 `準備完成` 就可以了。
 
-### 2. 設定 API key
+---
 
-在 Codespace 的終端機貼上（換成你自己的 key）：
-
-```bash
-export NVIDIA_API_KEY=nvapi-你的金鑰
-```
-
-> 想一勞永逸的話，到 <https://github.com/settings/codespaces> 新增一個
-> 名為 `NVIDIA_API_KEY` 的 secret，之後每個 Codespace 都會自動帶入。
-
-### 3. 啟動 agent
-
-```bash
-opencode
-```
-
-第一句話試試看：
-
-```
-列出 raw/ 底下有哪些樣本
-```
-
-它應該會真的跑一個指令，然後回報 4 個樣本、8 個檔案。
+## 實作請開
+**實作程式碼跟prompt -> [note.md](note.md)**
 
 ---
 
